@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 REFRESH_INTERVAL = 10
+LOGGER_PATH = "logger.conf"
 
 PG_CONF = {
     'dbname': os.environ.get('PG_DB_NAME'),
@@ -19,9 +20,9 @@ ELASTIC_CLIENT = {
 }
 
 STATE_KEY = 'last_movies_updated'
-STATE_PATH = '01_etl/storage.json'
+STATE_PATH = 'storage.json'
 
 NUMBER_OF_FETCHED = 100
 
-INDEX_PATH = "01_etl/helpers/index.json"
+INDEX_PATH = "helpers/index.json"
 INDEX_NAME = "movies"
