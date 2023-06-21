@@ -24,6 +24,6 @@ def create_index_if_not_exists(client: Elasticsearch, index_path: str, index_nam
     else:
         with open(index_path, "r") as fp:
             client.indices.create(
-                index='movies',
+                index=index_name,
                 body=json.load(fp)
             )

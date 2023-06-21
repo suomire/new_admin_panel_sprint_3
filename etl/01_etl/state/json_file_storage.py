@@ -15,12 +15,20 @@ class JsonFileStorage(BaseStorage):
 
     def save_state(self, state: Dict[str, Any]) -> None:
         """Сохранить состояние в хранилище."""
-        prev_key, prev_val = self.retrieve_state().popitem()
-        if prev_val < state[prev_key]:
+        try:
+            prev_key, prev_val = self.retrieve_state().popitem()
+        except KeyError:
             with open(self.file_path, 'w') as f:
                 json.dump(state, f)
+        else:
+            if prev_val < state[prev_key]:
+                with open(self.file_path, 'w') as f:
+                    json.dump(state, f)
 
     def retrieve_state(self) -> Dict[str, Any]:
         """Получить состояние из хранилища."""
-        with open(self.file_path, 'r') as f:
-            return json.load(f)
+        try:
+            with open(self.file_path, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return {}

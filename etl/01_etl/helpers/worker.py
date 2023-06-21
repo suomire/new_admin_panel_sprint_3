@@ -21,7 +21,7 @@ class ETLWorker:
     def producer(self, next_node: Generator):
         while producer_args := (yield):
             last_modified, table = producer_args
-            logger.info(f"Fetching changes from table {table}")
+            logger.info("Fetching changes from table %s", table)
             sql = f'''
             SELECT id, modified
             FROM content.{table}
@@ -42,7 +42,7 @@ class ETLWorker:
                 save_state.send((table, last_modified))
                 next_node.send((rows, last_modified))
             else:
-                logger.info(f"Enriching changes from table {table}")
+                logger.info("Enriching changes from table %s", table)
                 sql = f'''
                 SELECT fw.id, fw.modified
                 FROM content.film_work fw
@@ -143,7 +143,7 @@ class ETLWorker:
         while loader_args := (yield):
             movies: list[MovieRow]
             movies, last_modified = loader_args
-            logger.info(f"Load {len(movies)} movies to ElasticSearch")
+            logger.info("Load %d movies to ElasticSearch", len(movies))
             data = [{
                 "_index": "movies",
                 "_id": row.id,
@@ -169,5 +169,5 @@ class ETLWorker:
             key_to_save, last_modified_to_save = state_saver_args
             send_to_save = (yield)
             if send_to_save:
-                logger.info(f"Las state: {STATE_KEY}: {state.get_state(STATE_KEY)}")
+                logger.info(f"Last state: %s: %s", STATE_KEY, state.get_state(STATE_KEY))
                 state.set_state(f"{STATE_KEY}", last_modified_to_save)

@@ -36,7 +36,7 @@ def start_etl_process():
 
         while True:
             for table in Tables:
-                logger.info(f'Starting ETL process for table {table.value}')
+                logger.info('Starting ETL process for table %s', table.value)
                 # sleep(5)
                 producer_.send((state.get_state(STATE_KEY) or str(datetime.min), table.value))
 
@@ -46,7 +46,7 @@ def start_etl_process():
 if __name__ == '__main__':
     logger.info("Initiating state")
     state = State(JsonFileStorage(STATE_PATH))
-
+    sleep(10)
     es_client = Elasticsearch(ELASTIC_CLIENT['host'])
     logger.info(f"Create ES index if not exists")
     create_index_if_not_exists(es_client, index_path=INDEX_PATH, index_name=INDEX_NAME)
