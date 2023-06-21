@@ -1,0 +1,44 @@
+version: '3'
+services:
+  web:
+    build: ./02_django
+    volumes:
+      - ./02_django:/usr/src/app/
+      - static_data:/usr/src/app/static/
+    env_file:
+        - ./02_django/config/.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./03_postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - ./03_postgres/.env.db
+    ports:
+      - "5432:5432"
+
+  elastic:
+    image: elasticsearch:8.6.2
+    environment:
+      - discovery.type=single-node
+      - ingest.geoip.downloader.enabled=false
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    restart: on-failure
+
+  etl:
+      build: ./01_etl
+      env_file:
+        - ./01_etl/.env
+      depends_on:
+        - db
+        - elastic
+        - web
+
+volumes:
+  postgres_data:
+  static_data:
